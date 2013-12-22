@@ -1,4 +1,4 @@
-sample-trigger
+Sample Trigger Pad
 ==============
 
-Web-based sample trigger a la Ableton Live's drum rack.
+Web-based audio sample trigger a la Ableton Live's drum rack.
