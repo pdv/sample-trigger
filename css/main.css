@@ -1,0 +1,11 @@
+body {
+	background-color: #FFF;
+	color: #000;
+}
+
+#kick-trigger {
+	margin: 100px 100px 100px 100px;
+	background-color: #000;
+	height: 500px;
+	width: 500px;
+}
