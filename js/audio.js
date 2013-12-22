@@ -1,78 +1,48 @@
-window.onload = init;
 var context;
-var bufferLoader;
+window.onload = init;
+var kickBuffer;
 
 function init() {
+
   // Fix up prefixing
-  window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  context = new AudioContext();
-
-  bufferLoader = new BufferLoader(
-    context,
-    'sounds/kick.wav',
-    finishedLoading
-    );
-
-  var kicker = document.getElementById("kick-trigger");
-  kicker.onClick = bufferLoader.load();
-}
-
-function finishedLoading(buffer) {
-  // Create two sources and play them both together.
-  var source = context.createBufferSource();
-  source1.buffer = buffer;
-  source.connect(context.destination);
-  source.start(0);
-}
-
-
-
-
-// BufferLoader class
-
-function BufferLoader(context, url, callback) {
-  this.context = context;
-  this.url = url;
-  this.onload = callback;
-  this.buffer;
-}
-
-BufferLoader.prototype.loadBuffer = function(url, index) {
-  
-}
-
-BufferLoader.prototype.load = function() {
-
-  // Load buffer asynchronously
-  var request = new XMLHttpRequest();
-  request.open("GET", this.url, true);
-  request.responseType = "arraybuffer";
-
-  var loader = this;
-
-  request.onload = function() {
-    // Asynchronously decode the audio file data in request.response
-    loader.context.decodeAudioData(
-      request.response,
-      function(buffer) {
-        if (!buffer) {
-          alert('error decoding file data: ' + url);
-          return;
-        }
-        loader.buffer = buffer;
-      },
-      function(error) {
-        console.error('decodeAudioData error', error);
-      }
-    );
+  try {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    context = new AudioContext();
+  } catch(e) {
+    alert('Web Audio API is not supported in this browser');
   }
 
-  request.onerror = function() {
-    alert('BufferLoader: XHR error');
+  loadSound('sounds/kick.wav');
+  var kicker = document.getElementById("kick-trigger");
+  kicker.onclick = function() {playSound(kickBuffer);}
+}
+
+
+function loadSound(url) {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    context.decodeAudioData(
+      request.response, 
+      function(buffer) { kickBuffer = buffer; },
+      onError
+    )
   }
 
   request.send();
+}
 
-  if(request.status == 0)
-  	dump(req.responseText);
+function onError() {
+  alert('Something went wrong');
+}
+
+function playSound(buffer) {
+  if (!buffer) return;
+  console.log("yep");
+  var source = context.createBufferSource();
+  source.buffer = buffer;
+  source.connect(context.destination);
+  source.start(0);
 }
